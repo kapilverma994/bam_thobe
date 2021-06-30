@@ -30,7 +30,7 @@
                     <label class="col-md-2 col-sm-3 col-xs-12">Terms & Condition</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
                   <input type="hidden" class="form-control" name="id" value="{{$data->id}}"/>
-                  <textarea name="terms" id="" class="form-control" cols="30" rows="10">{{$data->terms}}</textarea>
+                  <textarea name="terms" id="summernote1" class="form-control" cols="30" rows="10">{{$data->terms}}</textarea>
 
                   @if($errors->has('terms'))
 
@@ -60,3 +60,10 @@
 </div>
 
 @endsection
+@push('scripts')
+<script>
+  $(document).ready(function() {
+    $('#summernote1').summernote();
+  });
+  </script>
+@endpush

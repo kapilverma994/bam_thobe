@@ -35,6 +35,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
 <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
 <script src="{{ asset('assets/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -295,7 +297,9 @@
 <script src="{{ asset('assets/js/chart/chart-area-demo.js') }}"></script> 
 <script src="{{ asset('assets/js/chart/chart-bar-demo.js') }}"></script> 
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 @yield('custom_script')
+@stack('scripts')
 <script>
 
   window.dataLayer = window.dataLayer || [];

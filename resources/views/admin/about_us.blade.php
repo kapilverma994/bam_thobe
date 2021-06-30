@@ -30,7 +30,7 @@
                     <label class="col-md-2 col-sm-3 col-xs-12">About Us</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
                   <input type="hidden" class="form-control" name="id" value="{{$data->id}}"/>
-                  <textarea name="about_us" id="" class="form-control" cols="30" rows="10">{{$data->about_us}}</textarea>
+                  <textarea name="about_us" id="summernote" class="form-control" cols="30" rows="10">{{$data->about_us}}</textarea>
 
                   @if($errors->has('about_us'))
 
@@ -60,3 +60,11 @@
 </div>
 
 @endsection
+@push('scripts')
+<script>
+$(document).ready(function() {
+  $('#summernote').summernote();
+});
+</script>
+
+@endpush

@@ -30,7 +30,7 @@
                     <label class="col-md-2 col-sm-3 col-xs-12">Privacy & Policy</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
                   <input type="hidden" class="form-control" name="id" value="{{$data->id}}"/>
-                  <textarea name="policy" id="" class="form-control" cols="30" rows="10">{{$data->privacy}}</textarea>
+                  <textarea name="policy" id="summernote3" class="form-control" cols="30" rows="10">{{$data->privacy}}</textarea>
 
                   @if($errors->has('policy'))
 
@@ -60,3 +60,10 @@
 </div>
 
 @endsection
+@push('scripts')
+<script>
+  $(document).ready(function() {
+    $('#summernote3').summernote();
+  });
+  </script>
+@endpush
