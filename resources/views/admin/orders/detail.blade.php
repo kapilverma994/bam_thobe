@@ -31,10 +31,13 @@
                 <tr>
                   <th data-field="id">ID</th>
                   <th>SubOrder Number</th>
+
+                  <th>Product Number</th>
            <th>Product Name </th>
            <th>Product Description</th>
       
            <th>Image</th>
+           <th>Quantity</th>
                   {{-- <th>Customer Name</th>
                   <th>Email</th> --}}
                   {{-- <th>Payment Mode</th> --}}
@@ -44,7 +47,7 @@
                   <th>Work status</th>
 
 
-                  <th data-field="action">Action</th>
+                  {{-- <th data-field="action">Action</th> --}}
                 </tr>
               </thead>
               <tbody>
@@ -55,7 +58,9 @@
               <tr>
                 <td>{{$loop->iteration}}</td>
                 <td>{{ $row->sorder_number }}</td>
+                <td>{{$row->products->sku??''}}</td>
 @if($row->product_id!=0)
+
 <td>{{ $row->products->title }}</td>
 <td>{{$row->products->description}}</td>
                
@@ -109,6 +114,7 @@ Cod
 {{-- <td>
     {{$row->products->cost}}
 </td> --}}
+<td>{{$row->o_quantity}}</td>
 <td>
     @if($row->delivery_status==1)
     <span class="label label-danger">Pending</span>
@@ -126,16 +132,26 @@ Cod
     @endif
 
 </td>
+<td>
 
-  <td>
+ 
+  @if ($row->work_status==1)
+   Cutting
+  @elseif($row->work_status==2)
+  Sewing
+  @else
+  QC  
+  @endif
+</td>
+  {{-- <td>
     <select name="categories_id" id="myInput" class="form-control" >
         <option selected="true" disabled="disabled">-- Choose status --</option>
         <option value="1,<?php echo $row->id;?>" <?php echo $row->work_status==1 ? 'selected=" "':'';?>>Cutting</option>
         <option value="2,<?php echo $row->id;?>" <?php echo $row->work_status==2 ? 'selected=" "':'';?>>Sewing</option>
         <option value="3,<?php echo $row->id;?>" <?php echo $row->work_status==3 ? 'selected=" "':'';?>>QC</option>
    </select>
-  </td>
-
+  </td> --}}
+{{-- 
                 <td class="datatable-ct">
                     @if($row->status==1)
                     @if($row->delivery_status!=2 && $row->delivery_status!=3 && $row->delivery_status!=4 )
@@ -147,7 +163,7 @@ Cod
 
 <a href="{{url('update_delivery/4',$row->id)}}"    class="btn btn-success">Deliverd</a>
 @endif
-                  </td>
+                  </td> --}}
               </tr>
               @endforeach
                 </tbody>

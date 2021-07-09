@@ -34,6 +34,12 @@
                   <input type="text" class="form-control" name="name" value="{{$branch->branch}}" />
                   @if($errors->has('name')) {{$errors->first('name')}} @endif </div>
               </div>
+              <div class="form-group-inner row">
+                <label class="col-md-2 col-sm-3 col-xs-12">Contact Number </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                  <input type="text" class="form-control" name="mobile_no" value="{{$branch->contact}}" />
+                  @if($errors->has('mobile_no')) {{$errors->first('mobile_no')}} @endif </div>
+              </div>
               
               <div class="form-group-inner row">
                 <label class="col-md-2 col-sm-3 col-xs-12">Address</label>

@@ -1059,7 +1059,7 @@ if($gift){
           }
           
 
-          $sdata=array('id'=>$order->id,'delivery_status'=>$order->delivery_status,'image'=>$image,'title'=>$title,'description'=>$description,'price'=>$price,'quantity'=>$order->o_quantity,'order_id'=>$order->sorder_number,'placed_on'=>$pdate,'delivery_time'=>'20-25 Days','address'=>$delivery_address,'total'=>$price,'delivery_charge'=>(string)0,'coupon_applied'=>$coupon_price,'coupon'=>$coupon,'visiting_charge'=>(string)0,'advanced_payment'=>(string)0,'remaining'=>$price);
+          $sdata=array('id'=>$order->id,'delivery_status'=>$order->delivery_status,'image'=>$image,'title'=>$title,'description'=>$description,'price'=>$price,'quantity'=>$order->o_quantity,'order_id'=>$order->sorder_number,'placed_on'=>$pdate,'delivery_time'=>'20-25 Days','address'=>$delivery_address,'total'=>$price,'delivery_charge'=>0,'coupon_applied'=>$coupon_price,'coupon'=>$coupon,'visiting_charge'=>0,'advanced_payment'=>0,'remaining'=>$price);
             return $this->successResponse($sdata, 'Track successfully!', $this->success());
         }
         

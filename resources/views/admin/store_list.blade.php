@@ -20,7 +20,7 @@
                   <th data-field="id">ID</th>
                   <!-- <th>Pin code</th> -->
                   <th>Store Name</th>
-                  <th>Name</th>
+                  <th>Branch Manager</th>
                   <th>Contact</th>
                   <th>Address</th>
                   <th>Image</th>

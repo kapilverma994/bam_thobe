@@ -23,6 +23,7 @@
                 <tr>
                   <th data-field="id">ID</th>
                   <th>Brach Name</th>
+                  <th>Mobile Number</th>
                   <th>Branch Address</th>
                <th>Created At</th>
                   <th data-field="action">Action</th>
@@ -35,6 +36,7 @@
                 <td>{{ $i }}
                   <?php $i++; ?></td>
                 <td>{{ $row->branch }}</td>
+                <td>{{$row->contact}}</td>
                 <td>{{ $row->address }}</td>
           
                 <td>{{ $row->created_at }}</td>                

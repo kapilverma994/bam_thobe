@@ -40,10 +40,12 @@ class BranchController extends Controller
     {
        $request->validate([
            'name'=>'required',
-           'address'=>'required'
+           'address'=>'required',
+           'mobile_no'=>'required|digits:10',
        ]);
        $bra=new Branch();
        $bra->branch=$request->name;
+       $bra->contact=$request->mobile_no;
        $bra->address=$request->address;
        $bra->lat=$request->latitude;
        $bra->lng=$request->longitude;
@@ -89,10 +91,12 @@ return view('admin.branch.edit',compact('branch'));
     {
         $request->validate([
             'name'=>'required',
-            'address'=>'required'
+            'address'=>'required',
+            'mobile_no'=>'required|digits:10',
         ]);
         $branch=Branch::findorfail($id);
         $branch->branch=$request->name;
+        $branch->contact=$request->mobile_no;
         $branch->address=$request->address;
         $branch->save();
         $notification = array(

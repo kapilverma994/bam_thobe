@@ -85,7 +85,8 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'cost' => 'required',
-            'image' => 'required'
+            'image' => 'required',
+            'product_number'=>'required|unique:products,sku',
         ]);
 
         if ($validator->fails()) {
@@ -116,6 +117,7 @@ class ProductController extends Controller
         $product->title = $request->title;
         $product->description = $request->description;
         $product->cost = $request->cost;
+        $product->sku=$request->product_number;
         $product->featured = $request->featured;
         $product->image = implode("|", $images);
         $product->save();
@@ -151,11 +153,13 @@ class ProductController extends Controller
 
     public function product_update(Request $request)
     {
+      
         $validator = Validator::make($request->all(), [
             'category_id' => 'required',
             'title' => 'required',
             'description' => 'required',
             'cost' => 'required',
+            'product_number'=>'required|unique:products,sku,'.$request->id,
 
         ]);
 
@@ -184,6 +188,7 @@ class ProductController extends Controller
         $product->title = $request->title;
         $product->description = $request->description;
         $product->cost = $request->cost;
+        $product->sku=$request->product_number;
         $product->featured = $request->featured;
         if (!empty($image)) {
             $product->image = implode("|", $images);

@@ -24,6 +24,7 @@
                   <th data-field="id">ID</th>
                   <th>Category</th>
                   <th>Sub Category</th>
+                  <th>Product Number</th>
                   <th>Title</th>
                   <th>Description</th>
                   <th>Cost</th>
@@ -40,6 +41,7 @@
                   <?php $i++; ?></td>
                 <td>{{ $row->category_name }}</td>
                 <td>{{ $row->sub_category }}</td>
+                <td>{{$row->sku}}</td>
                 <td>{{ $row->title }}</td>
                 <td>{{ $row->description }}</td>
                 <td>{{ $row->cost }}</td>

@@ -110,6 +110,12 @@
                     @endif </div>
                 </div>
                 <div class="form-group-inner row">
+                  <label class="col-md-2 col-sm-3 col-xs-12">Product Number</label>
+                  <div class="col-md-10 col-sm-9 col-xs-12">
+                    <input type="text" class="form-control" name="product_number" value="{{$product->sku}}" />
+                    @if($errors->has('product_number')) {{$errors->first('product_number')}} @endif </div>
+                </div>
+                <div class="form-group-inner row">
                   <label class="col-md-2 col-sm-3 col-xs-12"> Cost</label>
                   <div class="col-md-10 col-sm-9 col-xs-12">
                     <input type="text" class="form-control" name="cost" value="{{$product->cost}}"/>
