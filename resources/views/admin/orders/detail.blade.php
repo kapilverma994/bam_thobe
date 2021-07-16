@@ -6,6 +6,12 @@
   }
 
 </style>
+@php 
+ function getattr($table,$cond,$val,$attr){
+  return $value=DB::table($table)->where($cond,$val)->value($attr);
+}
+
+@endphp
 <div class="data-table-area mg-b-15">
   <div class="container-fluid sparkline13-list">
     <div class="page-header">
@@ -16,6 +22,9 @@
       </ol>
 
     </div>
+
+
+
 
     <div class="sparkline13-graph">
       <div class="datatable-dashv1-list custom-datatable-overright">
@@ -47,7 +56,7 @@
                   <th>Work status</th>
 
 
-                  {{-- <th data-field="action">Action</th> --}}
+                  <th data-field="action">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -81,16 +90,14 @@
 </td>
 <td></td>
 @endif
+
+
 @if($row->thobe_id!=0)
+
 <td>Customize  Product</td>
 
 <td>Booking Id :{{$row->custom_cart->booking_id}}
-@php 
- function getattr($table,$cond,$val,$attr){
-  return $value=DB::table($table)->where($cond,$val)->value($attr);
-}
 
-@endphp
 <p>Fabric : {{getattr('fabric_managements','id',$row->custom_cart->fabric,'fabrics')}}</p>
 <p>Collar :{{getattr('collar_managements','id',$row->custom_cart->collar,'collar_style')}}</p>
 <p>Cuffs : {{getattr('cuff_managements','id',$row->custom_cart->cuff,'cuff')}}</p> 
@@ -151,7 +158,7 @@ Cod
         <option value="3,<?php echo $row->id;?>" <?php echo $row->work_status==3 ? 'selected=" "':'';?>>QC</option>
    </select>
   </td> --}}
-{{-- 
+
                 <td class="datatable-ct">
                     @if($row->status==1)
                     @if($row->delivery_status!=2 && $row->delivery_status!=3 && $row->delivery_status!=4 )
@@ -163,7 +170,7 @@ Cod
 
 <a href="{{url('update_delivery/4',$row->id)}}"    class="btn btn-success">Deliverd</a>
 @endif
-                  </td> --}}
+                  </td> 
               </tr>
               @endforeach
                 </tbody>

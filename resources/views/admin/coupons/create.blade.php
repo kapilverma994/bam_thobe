@@ -1,4 +1,7 @@
-@extends('admin.master')@section('content')
+@extends('admin.master')
+@section('content')
+
+
 <div class="basic-form-area mg-b-15">
   <div class="container-fluid sparkline13-list">
     <div class="page-header">
@@ -34,15 +37,74 @@
                   @if($errors->has('code')) <span class="text-danger"> {{$errors->first('code')}}</span>@endif </div>
               </div>
 
+              <div class="form-group-inner row" >
+                <label class="col-md-2 col-sm-3 col-xs-12"> Coupon Discount On </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+              
+                  <select name="apply_on" id="apply_on"  class="form-control" id="" required onchange="func(this)">
+<option value="blank">Choose Type</option>
+<option value="product">Product</option>
+<option value="customize">Customize</option>
+<option value="card">Card</option>
+                  </select>
+                  @if($errors->has('type')) <span class="text-danger"> {{$errors->first('type')}}</span>@endif </div>
+              </div>
+
+              <div class="form-group-inner d-none row" id= "disc">
+                <label class="col-md-2 col-sm-3 col-xs-12"> Type </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+              
+                  <select name="type" class="form-control" id="" >
+<option value="">Choose Type</option>
+<option value="fixed">Fixed</option>
+<option value="percentage">Percentage</option>
+                  </select>
+                  @if($errors->has('type')) <span class="text-danger"> {{$errors->first('type')}}</span>@endif </div>
+              </div>
+
+       
+
+
+      
+   <div class="form-group-inner row d-none " id="product" >
+                <label class="col-md-2 col-sm-3 col-xs-12"> Choose Product </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+              
+                  <select name="products[]" class="form-control js-example-basic-multiple" multiple="multiple" >
+<option value="" class="">Choose Product</option>
+@foreach($products as $pro)
+
+<option value="{{$pro->id}}">{{$pro->title}}</option>
+@endforeach
+
+                  </select>
+                  @if($errors->has('product')) <span class="text-danger"> {{$errors->first('product')}}</span>@endif 
+                </div>
+
+              </div>
+          
+
+        
+
+            
 
 
 
-              <div class="form-group-inner row">
+              <div class="form-group-inner row" style="">
                 <label class="col-md-2 col-sm-3 col-xs-12">Value </label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
                   <input type="text" class="form-control" name="price" value="{{old('price')}}" placeholder="Enter Price" />
                   @if($errors->has('price')) <span class="text-danger"> {{$errors->first('price')}} </span> @endif </div>
               </div>
+
+
+ <div class="form-group-inner row">
+                <label class="col-md-2 col-sm-3 col-xs-12">Minimum Cart Amount </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                  <input type="text" class="form-control" name="cart_amount" value="{{old('cart_amount')}}" placeholder="Enter Price" />
+                  @if($errors->has('cart_amount')) <span class="text-danger"> {{$errors->first('cart_amount')}} </span> @endif </div>
+              </div>
+
               <div class="form-group-inner row">
                 <label class="col-md-2 col-sm-3 col-xs-12">Description </label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
@@ -83,38 +145,30 @@
 </div>
 
 @endsection
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 <script>
-        function preview_images()
-        {
-            document.getElementById("image_preview").innerHTML = "";
-            var total_file=document.getElementById("images").files.length;
-            for(var i=0;i<total_file;i++)
-            {
-                $('#image_preview').append("<div class='col-md-3'><img class='img-responsive' src='"+URL.createObjectURL(event.target.files[i])+"'></div>");
-            }
-        }
-    </script>
-<script>
-    $(document).ready(function(){
 
-     $('#myInput').bind('change keyup',function() {
-  var id=$("#myInput").val();
-    $.ajax({
-        url: '{{ url('/cat_get_subcat') }}',
-        type: 'POST',
-        data: {
-          _token: '{{ csrf_token() }}',
-            id: id
-        },
-        dataType: 'html',
-        success: function(data)
-        {
-           $('#subdata').html(data);
-        }
-    });
-});
 
-    });
+function func(event){
+  if(event.value == "product"){
+    document.getElementById("product").classList.remove("d-none")
+    document.getElementById("disc").classList.remove("d-none")
+  }
+  else{
+    document.getElementById("product").classList.add("d-none")
+    document.getElementById("disc").classList.add("d-none")
+  }
+}
+  </script>
 
-</script>
+
+<style>
+  .js-example-basic-multiple {
+    width: 500px !important;
+    height: 100% !important;
+}
+.select2-container{    width: 100% !important;}
+
+</style>
+@endpush

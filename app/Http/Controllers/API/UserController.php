@@ -38,6 +38,7 @@ use DB;
 use Hash;
 use Mail;
 use App\Traits\ApiResponseHelper;
+use Carbon\Carbon;
 use Image;
 
 class UserController extends Controller
@@ -312,6 +313,7 @@ class UserController extends Controller
         }
 
          $user = User::select('*')->where(['token'=>$token])->first();
+        
         if(!empty($user))
         {
                 if($request->type=='normal')
@@ -339,16 +341,16 @@ class UserController extends Controller
                 if($request->type=='customize')
                 {
                     $id=$request->cart_id;   
-         $quantity=$request->quantity;   
-         $user = User::select('*')->where(['token'=>$token])->first();
-        if(!empty($user))
-        {
-            $update = Thobe_cart::where(['token'=>$token,'id'=>$id])->update(
+                    $quantity=$request->quantity;   
+                     $user = User::select('*')->where(['token'=>$token])->first();
+                    if(!empty($user))
+                 {
+                     $update = Thobe_cart::where(['token'=>$token,'id'=>$id])->update(
                     [
                       'quantity' =>$quantity,
                     ]);
-        }
-                }
+                 }
+                 }
                 return $this->successResponse($user, ' Add to cart successfully!', $this->success());
         }
         else
@@ -365,6 +367,7 @@ class UserController extends Controller
          $token=$headers['Authorization'];
 
          $user = User::select('*')->where(['token'=>$token])->first();
+         $total_qty=0;
         if(!empty($user))
         {
                 $cartcheck=array();
@@ -384,6 +387,7 @@ class UserController extends Controller
                     $row->image=$url.'/public/uploads/product/'.$image[0];
                    $tcost=$row->cost*$row->quantity;
                    $row->total_cost=(string)$tcost;
+                   $total_qty+=$row->quantity;
                    $tnormaln=$row->cost*$row->quantity;
                    $tnormal=$tnormal+$tnormaln;
                    $row->type='normal';
@@ -407,7 +411,10 @@ class UserController extends Controller
                }
                $totalprice=0;
                $customize=array();
+               $ad_py=0;
                $sdata=array();
+               $customize_price=0;
+               $cust_total=0;
                $customize = Thobe_cart::select('*')->where(['status'=>1,'token'=>$token,'older_status'=>0])->orderBy('id','DESC')->get();
                foreach ($customize as $crow)
                {
@@ -418,24 +425,29 @@ class UserController extends Controller
                  $pocket = Pocket::select('*')->where(['id'=>$crow->pocket])->orderBy('id','DESC')->first();
                  $placket = Front_style::select('*')->where(['id'=>$crow->placket])->orderBy('id','DESC')->first();
                  $button = Thobe_Button_management::select('*')->where(['id'=>$crow->button])->orderBy('id','DESC')->first();
-                 
-                 $totalprice=$totalprice+$fabric['price']+$collar['price']+$cuffs['price']+$pocket['price']+$placket['price']+$button['price'];
+                 $total_qty+=$crow->quantity;
+                 $totalprice=$fabric['price']+$collar['price']+$cuffs['price']+$pocket['price']+$placket['price']+$button['price'];
                $totalprice=$totalprice*$crow->quantity;
                  $url = url("/");
                  $img='thobe_model.png';
                  
                   $imgg=$url.'/public/uploads/thobeimage/'.$img;
-               
-                 $moredata=array('fabric'=>$fabric['price'],'color_code'=>$fabric['color_code'],'collar'=>$collar['price'],'cuffs'=>$cuffs['price'],'pocket'=>$pocket['price'],'placket'=>$placket['price'],'button'=>$button['price'],'Customization_charge'=>$totalprice,'visiting_charge'=>0,'advanced_payment'=>0,'remaining'=>0);
+               $ad_py=($totalprice*25)/100;
+               $rem_py=$totalprice-$ad_py;
+                 $moredata=array('fabric'=>$fabric['price'],'color_code'=>$fabric['color_code'],'collar'=>$collar['price'],'cuffs'=>$cuffs['price'],'pocket'=>$pocket['price'],'placket'=>$placket['price'],'button'=>$button['price'],'Customization_charge'=>$totalprice,'visiting_charge'=>(string)0,'advanced_payment'=>(string)$ad_py,'remaining'=>(string)$rem_py);
                  $sdata[]=array('id'=>$crow->id,'title'=>'Customized Thobe','description'=>'My Customized Thobe','price'=>$totalprice,'image'=>$imgg,'quantity'=>$crow->quantity,'type'=>'customize','view_more'=>$moredata);
-
+                 $customize_price+=$totalprice;
+                 $cust_total+=$ad_py;
+                
                }
+            
                $points=$points/10;
-               $grandtotal=$tnormal+$tgift+$totalprice+0;
+            
+               $grandtotal=$tnormal+$tgift+$cust_total+0;
                $grandtotal=$grandtotal-$coupon_price;
                $grandtotal=$grandtotal-$points;
                
-               $sdata=array('normal'=>$cartcheck, 'gift_cart'=>$giftcheck,'customize'=>$sdata,'thobe_total'=>(string)$totalprice,'accessories_total'=>(string)$tnormal,'gift_card_amount'=>(string)$tgift,'delivery_charge'=>(string)0,'coupon_applied'=>(string)$coupon_price,'points_apply'=>(string)$points,'grand_total'=>(string)$grandtotal,'loyality_point'=>(string)$points);
+               $sdata=array('normal'=>$cartcheck, 'gift_cart'=>$giftcheck,'customize'=>$sdata,'thobe_total'=>$customize_price,'accessories_total'=>$tnormal,'gift_card_amount'=>$tgift,'delivery_charge'=>0,'coupon_applied'=>$coupon_price,'points_apply'=>$points,'grand_total'=>(string)$grandtotal,'loyality_point'=>$points,'total_quantity'=>$total_qty);
 
                 return $this->successResponse($sdata, ' Get cart successfully!', $this->success());
         }
@@ -449,10 +461,12 @@ class UserController extends Controller
 
     public function thobe_cart_quantity(Request $request)
     {
+     
         $headers = apache_request_headers();
          $token=$headers['Authorization'];
          $id=$request->cart_id;   
-         $quantity=$request->quantity;   
+         $quantity=$request->quantity; 
+
          $user = User::select('*')->where(['token'=>$token])->first();
         if(!empty($user))
         {
@@ -460,7 +474,12 @@ class UserController extends Controller
                     [
                       'quantity' =>$quantity,
                     ]);
-            return $this->successResponse($user, ' Quantity update successfully!', $this->success());
+                    if($update){
+                      return $this->successResponse($update, ' Quantity update successfully!', $this->success());
+                    }else{
+                      return response()->json(['status'=>false,'msg'=>'Quantity not updated']);
+                    }
+       
         }
         else
         {
@@ -710,13 +729,22 @@ class UserController extends Controller
               
                 $giftcheck = Gift_cart::select('*')->where(['token'=>$token,'status'=>1])->get();
                 $thobecartcheck = Thobe_cart::select('*')->where(['token'=>$token,'status'=>1])->get();
-                
+          // $buffer=Setting::where('id',1)->value('buffer_date');
+//           $estimate=Order::where('order_number','order1689')->value('estimate_delivery');
+         
+         
+ 
+// // Add days to date and display it
+// return date('Y-m-d', strtotime($estimate. ' + '.$buffer.' days'));
+        
+            
                 $sorder=0;
                 $j=1;
                 if($cartcheck)
                 {
                   $morder = mt_rand(1000,9999);
             $morder='order'.$morder;
+
             
                   foreach ($cartcheck as $row)
                   {
@@ -777,7 +805,7 @@ class UserController extends Controller
                     $sorder='sorder'.time().$j;
                     $order  = new Order;
                 $order->token = $token;
-                 $order->address_id = $trow->home_address;
+                 $order->address_id = $trow->home_address??'3';
                  $order->grand_total = $request->grand_total;
                  $order->cart_id = $trow->id;
                  $order->thobe_id = $trow->id;
@@ -831,6 +859,8 @@ class UserController extends Controller
         $headers = apache_request_headers();
          $token=$headers['Authorization'];
          $user = User::select('*')->where(['token'=>$token])->first();
+         $ad_py=0;
+         $pending_amount=0;
         if(!empty($user))
         {
             $sdata=array();
@@ -838,33 +868,33 @@ class UserController extends Controller
             $tdata=array();
             $order_history=array();
           $ordercheck=Order::join('products', 'orders.product_id', '=', 'products.id')
-                ->where('orders.status',0)
+               ->where('orders.delivery_status','!=',4)
                 ->where('orders.token',$token)
                 ->orderBy('orders.id', 'DESC')
          
                ->get(['orders.*', 'products.title','products.image','products.description','products.cost']);
 
                $giftcheck=Order::join('gifts', 'orders.gift_id', '=', 'gifts.id')
-                ->where('orders.status',0)
+               ->where('orders.delivery_status','!=',4)
                 ->where('orders.token',$token)
                 ->orderBy('orders.id', 'DESC')
                ->get(['orders.*', 'gifts.title','gifts.image','gifts.description','gifts.price']);
 
-               $thobecartcheck = Order::select('*')->where(['token'=>$token,'status'=>0,'type'=>'thobe_cart'])->get();
+               $thobecartcheck = Order::select('*')->where(['token'=>$token,'type'=>'thobe_cart'])->orderBy('id','DESC')->get();
 
                $url = url("/");
             foreach ($ordercheck as $row)
             {
               $image=explode('|',$row->image);
               $pimage=$url.'/public/uploads/product/'.$image[0];
-              $sdata[]=array('order_id'=>$row->id,'sub_order_id'=>$row->sorder_number,'type'=>$row->type,'title'=>$row->title,'description'=>$row->description,'price'=>$row->cost,'quantity'=>$row->o_quantity,'image'=>$pimage);
+              $sdata[]=array('order_id'=>$row->id,'sub_order_id'=>$row->sorder_number,'type'=>$row->type,'title'=>$row->title,'description'=>$row->description,'price'=>(string)$row->cost,'quantity'=>$row->o_quantity,'image'=>$pimage);
             }
 
             foreach ($giftcheck as $grow)
             {
               $image=explode('|',$grow->image);
               $pimage=$url.'/public/uploads/gifts/'.$image[0];
-              $gdata[]=array('order_id'=>$grow->id,'sub_order_id'=>$grow->sorder_number,'type'=>$grow->type,'title'=>$grow->title,'description'=>$grow->description,'price'=>$grow->price,'quantity'=>$grow->o_quantity,'image'=>$pimage);
+              $gdata[]=array('order_id'=>$grow->id,'sub_order_id'=>$grow->sorder_number,'type'=>$grow->type,'title'=>$grow->title,'description'=>$grow->description,'price'=>(string)$grow->price,'quantity'=>$grow->o_quantity,'image'=>$pimage);
             }
             
             foreach ($thobecartcheck as $trow)
@@ -881,6 +911,8 @@ class UserController extends Controller
                  
                  $totalprice=$fabric['price']+$collar['price']+$cuffs['price']+$pocket['price']+$placket['price']+$button['price'];
                $totalprice=$totalprice*$thobeid->quantity;
+               $ad_py=($totalprice*25)/100;
+               $pending_amount=$totalprice-$ad_py;
 
                $url = url("/");
                  $img='thobe_model.png';
@@ -889,7 +921,7 @@ class UserController extends Controller
                  
 
 
-               $tdata[]=array('order_id'=>$trow->id,'sub_order_id'=>$trow->sorder_number,'type'=>$trow->type,'title'=>'Customize','description'=>'customize','price'=>$totalprice,'quantity'=>$trow->o_quantity,'image'=>$imgg);
+               $tdata[]=array('order_id'=>$trow->id,'sub_order_id'=>$trow->sorder_number,'type'=>$trow->type,'title'=>'Customize','description'=>'customize','price'=>(string)$totalprice,'quantity'=>$trow->o_quantity,'image'=>$imgg);
             }
 
             $order_history=array_merge($sdata,$gdata,$tdata);
@@ -914,13 +946,13 @@ class UserController extends Controller
             $gdata=array();
             $order_history=array();
           $ordercheck=Order::join('products', 'orders.product_id', '=', 'products.id')
-                ->where('orders.status',1)
+                ->where('orders.delivery_status',4)
                 ->where('orders.token',$token)
                 ->orderBy('orders.id', 'DESC')
                ->get(['orders.*', 'products.title','products.image','products.description','products.cost']);
 
                $giftcheck=Order::join('gifts', 'orders.gift_id', '=', 'gifts.id')
-                ->where('orders.status',1)
+                ->where('orders.delivery_status',4)
                 ->where('orders.token',$token)
                 ->orderBy('orders.id', 'DESC')
                ->get(['orders.*', 'gifts.title','gifts.image','gifts.description','gifts.price']);
@@ -930,14 +962,14 @@ class UserController extends Controller
             {
               $image=explode('|',$row->image);
               $pimage=$url.'/public/uploads/product/'.$image[0];
-              $sdata[]=array('order_id'=>$row->id,'sub_order_id'=>$row->sorder_number,'type'=>$row->type,'title'=>$row->title,'description'=>$row->description,'price'=>$row->cost,'quantity'=>$row->o_quantity,'image'=>$pimage);
+              $sdata[]=array('order_id'=>$row->id,'sub_order_id'=>$row->sorder_number,'type'=>$row->type,'title'=>$row->title,'description'=>$row->description,'price'=>(string)$row->cost,'quantity'=>$row->o_quantity,'image'=>$pimage);
             }
 
             foreach ($giftcheck as $grow)
             {
               $image=explode('|',$grow->image);
               $pimage=$url.'/public/uploads/gifts/'.$image[0];
-              $gdata[]=array('order_id'=>$grow->id,'sub_order_id'=>$grow->sorder_number,'type'=>$grow->type,'title'=>$grow->title,'description'=>$grow->description,'price'=>$grow->price,'quantity'=>$grow->o_quantity,'image'=>$pimage);
+              $gdata[]=array('order_id'=>$grow->id,'sub_order_id'=>$grow->sorder_number,'type'=>$grow->type,'title'=>$grow->title,'description'=>$grow->description,'price'=>(string)$grow->price,'quantity'=>$grow->o_quantity,'image'=>$pimage);
             }
             $order_history=array_merge($sdata,$gdata);
             //$history=array('normal'=>$sdata,'gift'=>$gdata);
@@ -972,16 +1004,18 @@ if($gift){
 
     public function track_order($sorder_number)
     {
+    
      
          $headers = apache_request_headers();
          $token=$headers['Authorization'];
          $user = User::select('*')->where(['token'=>$token])->first();
-       
-      
+ 
+      $ad_py=0;
         if(!empty($user))
         {
-        $order = Order::select('*')->where(['sorder_number'=>$sorder_number,'status'=>0])->first();
-  
+         
+        $order = Order::select('*')->where(['sorder_number'=>$sorder_number])->first();
+
        
         if(!empty($order))
         {   
@@ -1003,7 +1037,7 @@ if($gift){
           {
       
             $thobe = Thobe_cart::select('*')->where(['id'=>$order->thobe_id])->first();
-           
+         
                 $url = url("/");
                  $img='thobe_model.png';
                  
@@ -1020,6 +1054,8 @@ if($gift){
                  
                  $totalprice=$fabric['price']+$collar['price']+$cuffs['price']+$pocket['price']+$placket['price']+$button['price'];
                $price=$totalprice*$thobe->quantity;
+               $ad_py=($price*25)/100;
+              
                $title='Customize';
                $description='Customize';
           }
@@ -1057,9 +1093,9 @@ if($gift){
             $b='branch';
             $delivery_address=$branchh->b .' '. $branchh->branch .' '. $branchh->address;
           }
-          
-
-          $sdata=array('id'=>$order->id,'delivery_status'=>$order->delivery_status,'image'=>$image,'title'=>$title,'description'=>$description,'price'=>$price,'quantity'=>$order->o_quantity,'order_id'=>$order->sorder_number,'placed_on'=>$pdate,'delivery_time'=>'20-25 Days','address'=>$delivery_address,'total'=>$price,'delivery_charge'=>0,'coupon_applied'=>$coupon_price,'coupon'=>$coupon,'visiting_charge'=>0,'advanced_payment'=>0,'remaining'=>$price);
+          $status_message=['Order Placed','Order Packed','Order Shipped','Order Delivered'];
+        $rem_price=  $price-$ad_py;
+          $sdata=array('id'=>$order->id,'delivery_status'=>$order->delivery_status,'image'=>$image,'title'=>$title,'description'=>$description,'price'=>(string)$price,'quantity'=>$order->o_quantity,'order_id'=>$order->sorder_number,'placed_on'=>$pdate,'delivery_time'=>'20-25 Days','address'=>$delivery_address,'total'=>(string)$price,'delivery_charge'=>0,'coupon_applied'=>$coupon_price,'coupon'=>$coupon,'visiting_charge'=>(string)0,'advanced_payment'=> (string)$ad_py,'remaining'=>(string)$rem_price,'status_message'=>$status_message);
             return $this->successResponse($sdata, 'Track successfully!', $this->success());
         }
         

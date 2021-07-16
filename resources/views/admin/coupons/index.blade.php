@@ -26,7 +26,10 @@
                   <th data-field="id">ID</th>
                   <th>Image</th>
                   <th>Coupon Code</th>
+                  <th>Type</th>
+                  <th>Apply On</th>
                   <th>Coupon Value </th>
+                  <th>Minimum Cart Value</th>
 <th>Description</th>
 
                   <th>Expiry Date</th>
@@ -39,9 +42,17 @@
               @foreach($collar as $row)
               <tr>
                 <td>{{$loop->iteration}}</td>
+                @if($row->image=="")
+                <td><img src="{{url('uploads/offer/noimage.jpg')}}" height="30px" width="50px" /></td>
+                @else 
                 <td><img src="public/uploads/offer/{{ $row->image }}" height="30px" width="50px" /></td>
+                @endif
+                
                 <td>{{ $row->code }}</td>
-                <td>{{ $row->price }}</td>
+                <td>{{$row->type}}</td>
+                <td>{{$row->coupon_wise}}</td>
+                <td>{{ $row->value }}</td>
+                <td>{{$row->cart_value}}</td>
                 <td>{{$row->description}}</td>
 
                 <td>{{ $row->expiry_date }}</td>

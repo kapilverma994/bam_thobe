@@ -1,11 +1,14 @@
-@extends('admin.master')@section('content')
+@extends('admin.master')
+@section('content')
+
+
 <div class="basic-form-area mg-b-15">
   <div class="container-fluid sparkline13-list">
     <div class="page-header">
-      <h2 class="main-content-title">Update Coupon</h2>
+      <h2 class="main-content-title">Add Coupon</h2>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item active" aria-current="page"> Update Coupon</li>
+        <li class="breadcrumb-item active" aria-current="page"> Add Coupon</li>
       </ol>
     </div>
 
@@ -34,15 +37,75 @@
                   @if($errors->has('code')) <span class="text-danger"> {{$errors->first('code')}}</span>@endif </div>
               </div>
 
+              <div class="form-group-inner row" >
+                <label class="col-md-2 col-sm-3 col-xs-12"> Coupon Discount On </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+              
+                  <select name="apply_on" id="apply_on"  class="form-control" id="" required onchange="func(this)">
+<option value="blank">Choose Type</option>
+<option value="product" {{$off->coupon_wise=='product'?'selected':''}}>Product</option>
+<option value="customize" {{$off->coupon_wise=='customize'?'selected':''}}>Customize</option>
+<option value="card" {{$off->coupon_wise=='card'?'selected':''}}>Card</option>
+                  </select>
+                  @if($errors->has('type')) <span class="text-danger"> {{$errors->first('type')}}</span>@endif </div>
+              </div>
+
+              <div class="form-group-inner {{$off->coupon_wise=="product"?'':'d-none'}} row" id= "disc">
+                <label class="col-md-2 col-sm-3 col-xs-12"> Type </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+              
+                  <select name="type" class="form-control" id="" >
+<option value="">Choose Type</option>
+<option value="fixed" {{$off->type=='fixed'?'selected':''}}>Fixed</option>
+<option value="percentage" {{$off->type=='percentage'?'selected':''}}>Percentage</option>
+                  </select>
+                  @if($errors->has('type')) <span class="text-danger"> {{$errors->first('type')}}</span>@endif </div>
+              </div>
+
+    
+
+
+      
+   <div class="form-group-inner row {{$off->coupon_wise=="product"?'':'d-none'}}" id="product" >
+                <label class="col-md-2 col-sm-3 col-xs-12"> Choose Product </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+              
+                  <select name="products[]" class="form-control js-example-basic-multiple" multiple="multiple" >
+<option value="" class="">Choose Product</option>
+@foreach($checkpro as $cp)
+@foreach($products as $pro)
+<option value="{{$pro->id}}" {{$cp==$pro->id?'selected':''}} >{{$pro->title}}</option>
+@endforeach
+@endforeach
+
+                  </select>
+                  @if($errors->has('product')) <span class="text-danger"> {{$errors->first('product')}}</span>@endif 
+                </div>
+
+              </div>
+          
+
+        
+
+            
 
 
 
-              <div class="form-group-inner row">
+              <div class="form-group-inner row" style="">
                 <label class="col-md-2 col-sm-3 col-xs-12">Value </label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
-                  <input type="text" class="form-control" name="price" value="{{$off->price}}" placeholder="Enter Price" />
+                  <input type="text" class="form-control" name="price" value="{{$off->value}}" placeholder="Enter Price" />
                   @if($errors->has('price')) <span class="text-danger"> {{$errors->first('price')}} </span> @endif </div>
               </div>
+
+
+ <div class="form-group-inner row">
+                <label class="col-md-2 col-sm-3 col-xs-12">Minimum Cart Amount </label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                  <input type="text" class="form-control" name="cart_amount" value="{{$off->cart_value}}" placeholder="Enter Price" />
+                  @if($errors->has('cart_amount')) <span class="text-danger"> {{$errors->first('cart_amount')}} </span> @endif </div>
+              </div>
+
               <div class="form-group-inner row">
                 <label class="col-md-2 col-sm-3 col-xs-12">Description </label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
@@ -53,14 +116,13 @@
               <div class="form-group-inner row">
                 <label class="col-md-2 col-sm-3 col-xs-12">Image</label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
-                  <img src="{{asset('uploads/offer/'.$off->image)}}" height="100px" width="100px" alt="">
-                  <input type="file" class="form-control" name="image" value="{{old('image')}}"  />
+
+                  <input type="file" class="form-control" name="image"   />
                   @if($errors->has('image')) <span class="text-danger">  {{$errors->first('image')}} </span> @endif </div>
               </div>
               <div class="form-group-inner row">
                 <label class="col-md-2 col-sm-3 col-xs-12">Choose Expiry Date</label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
-
                   <input type="date" class="form-control" name="expiry_date" value="{{$off->expiry_date}}" placeholder="Enter Value" />
                   @if($errors->has('expiry_date')) <span class="text-danger">  {{$errors->first('expiry_date')}} </span> @endif </div>
               </div>
@@ -84,5 +146,30 @@
 </div>
 
 @endsection
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script>
 
 
+function func(event){
+  if(event.value == "product"){
+    document.getElementById("product").classList.remove("d-none")
+    document.getElementById("disc").classList.remove("d-none")
+  }
+  else{
+    document.getElementById("product").classList.add("d-none")
+    document.getElementById("disc").classList.add("d-none")
+  }
+}
+  </script>
+
+
+<style>
+  .js-example-basic-multiple {
+    width: 500px !important;
+    height: 100% !important;
+}
+.select2-container{    width: 100% !important;}
+
+</style>
+@endpush

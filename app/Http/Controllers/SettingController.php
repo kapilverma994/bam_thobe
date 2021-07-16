@@ -151,10 +151,12 @@ if($res){
         "private_key" => 'required',
         "loyality_point" =>'required|numeric',
         "apikey" =>'required',
+        'buffer_date'=>'required|numeric',
 
      ]);
   $set=Setting::find($id);
   $set->app_name=$request->title;
+  $set->buffer_date=$request->buffer_date;
   $set->email=$request->email;
   $set->phone=$request->phone;
   $set->address=$request->address;

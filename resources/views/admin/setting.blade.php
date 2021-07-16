@@ -28,6 +28,18 @@
             {{csrf_field()}}
 
 
+            <div class="form-group-inner row">
+              <label class="col-md-2 col-sm-3 col-xs-12">Buffer Date</label>
+              <div class="col-md-10 col-sm-9 col-xs-12">
+
+            <input type="number" class="form-control" name="buffer_date" value="{{$setting->buffer_date}}" />
+            @if($errors->has('buffer_date'))
+
+            {{$errors->first('buffer_date')}}
+
+            @endif </div>
+        </div>
+
                 <div class="form-group-inner row">
                     <label class="col-md-2 col-sm-3 col-xs-12">Website Title</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">

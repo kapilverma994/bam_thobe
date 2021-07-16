@@ -10,6 +10,7 @@ use App\Http\Traits\NotificationTrait;
 use function GuzzleHttp\json_decode;
 use Auth, Validator;
 use App\Models\Notification;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -38,13 +39,57 @@ class OrderController extends Controller
     public function all_orders(){
 
 
-      $orders=  Order::with('users','customer_address')->where('delivery_status',1)->groupBy('order_number')->get();;
+      $orders=  Order::with('users','customer_address')->where('delivery_status',1)->groupBy('order_number')->get();
+
+$ad_py=0;
+$totalprice=0;
+foreach($orders as $row){
+
+
+
+
+if(!empty($row->thobe_id)){
+ 
+
+$thobe = DB::table('thobe_carts')->where(['id'=>$row->thobe_id])->first();
+// dd($thobe);
+$fabric = DB::table('thobe_fabric_managements')->where(['id'=>$thobe->fabric])->orderBy('id','DESC')->first();
+ 
+ $collar = DB::table('collar_managements')->where(['id'=>$thobe->collar])->orderBy('id','DESC')->first();
+
+$cuffs = DB::table('cuff_managements')->where(['id'=>$thobe->cuffs])->orderBy('id','DESC')->first();
+
+$pocket = DB::table('pocket_managements')->where(['id'=>$thobe->pocket])->orderBy('id','DESC')->first();
+// dd($pocket);
+ $placket = DB::table('front_style_managements')->where(['id'=>$thobe->placket])->orderBy('id','DESC')->first();
+//  dd($placket);
+$button = DB::table('thobe_button_managments')->where(['id'=>$thobe->button])->orderBy('id','DESC')->first();
+//  dd($button);         
+$totalprice=$fabric->price+$collar->price+$cuffs->price+$pocket->price+$placket->price+$button->price;
+// dd($totalprice);
+ $price=$totalprice*$thobe->quantity;
+//  dd($price);
+$ad_py=($price*25)/100;
+
+}
+}
+
+   
+    
       return view('admin.orders.index',compact('orders'));
     }
 
     public function all_ongoing_orders(){
         $orders=Order::with('products','users')->where('status',1)->get();
         return view('admin.orders.ongoing_order',compact('orders'));
+    }
+
+    public function delay_order(){
+       $date= Carbon::now()->format('Y-m-d');
+       
+          $orders=  Order::with('users','customer_address')->where('estimate_delivery','<',$date)->groupBy('order_number')->get();
+     
+      return view('admin.orders.delay_order',compact('orders'));
     }
 
 

@@ -250,6 +250,8 @@ Route::group(['middleware' => ['auth', 'checkAdmin']], function()
 
 //////////////////orders Route/////////////////////
 Route::get('order-list',[OrderController::class,'all_orders'])->name('order_list');
+
+Route::get('delay-order-list',[OrderController::class,'delay_order'])->name('delay_order');
 Route::get('update-status/{status}/{id}',[OrderController::class,'update_status']);
 Route::get('view-detail/{id}',[OrderController::class,'view_detail']);
 Route::post('suborderworkstatus', [OrderController::class, 'suborderworkstatus']);

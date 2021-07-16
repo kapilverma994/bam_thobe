@@ -45,9 +45,21 @@
                       <div class="icon">
                           <i class="ion ion-document-text"></i>
                       </div>
-                      <a href="{{'pending/order'}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                      <a href="{{url('pending/order')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                   </div>
               </div>
+              <div class="col-md-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{$pendingorder}}</h3>
+                        <p>Delay Orders</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-document-text"></i>
+                    </div>
+                    <a href="{{url('delay-order-list')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
                 <div class="col-md-3 col-6">
                     <div class="small-box bg-success">
                         <div class="inner">
@@ -57,7 +69,7 @@
                         <div class="icon">
                             <i class="ion ion-pie-graph"></i>
                         </div>
-                        <a href="{{'confirm/order'}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                        <a href="{{url('confirm/order')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                  <div class="col-md-3 col-6">
@@ -69,7 +81,7 @@
                         <div class="icon">
                             <i class="ion ion-pie-graph"></i>
                         </div>
-                        <a href="{{'cancel/order'}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                        <a href="{{url('cancel/order')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
 				<div class="col-md-3 col-6">
@@ -88,6 +100,9 @@
 
 
 		  </div>
+
+
+
            
         </div>
   

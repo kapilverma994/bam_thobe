@@ -30,12 +30,16 @@
 <link rel="stylesheet" href="{{ asset('assets/css/editor/x-editor-style.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/data-table/bootstrap-table.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/data-table/bootstrap-editable.css') }}">
+
 <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
 <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
 <script src="{{ asset('assets/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@yield('custom_css')
+
 
 </head>
 
@@ -129,6 +133,7 @@
           <li class=""> <a class="has-arrow"><i class="fa fa-user" aria-hidden="true"></i><span class="mini-click-non">Manage Order</span></a>
             <ul class="submenu-angle" aria-expanded="true">
               <li><a href="{{url('order-list')}}"><span class="mini-sub-pro">Order  Management</span></a></li>
+              <li><a href="{{url('delay-order-list')}}"><span class="mini-sub-pro">Delay Order</span></a></li>
               {{-- <li><a href="{{url('ongoing-order')}}"><span class="mini-sub-pro">Ongoing Order</span></a></li> --}}
 
             </ul>
@@ -246,8 +251,9 @@
     </div>
   </div>
 </div>
+
 <script src="{{ asset('assets/js/vendor/jquery-1.12.4.min.js') }}"></script> 
-<!-- <script src="https://code.jquery.com/jquery-3.4.1.js"></script> -->
+
 <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script> 
 <script src="{{ asset('assets/js/wow.min.js') }}"></script> 
 <script src="{{ asset('assets/js/jquery-price-slider.js') }}"></script> 
@@ -298,8 +304,18 @@
 <script src="{{ asset('assets/js/chart/chart-bar-demo.js') }}"></script> 
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
-@yield('custom_script')
 @stack('scripts')
+ 
+ <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.js-example-basic-multiple').select2();
+});
+</script>
+
+
+
+
 <script>
 
   window.dataLayer = window.dataLayer || [];

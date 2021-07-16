@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Coupon;
 use App\Models\Offer;
+use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CouponController extends Controller
@@ -15,8 +17,11 @@ class CouponController extends Controller
      */
     public function index()
     {
-        $collar=Offer::all();
-        return view('admin.coupons.index',compact('collar'));
+        $date= Carbon::now()->format('Y-m-d');
+        $collar=Coupon::all();
+ 
+  
+        return view('admin.coupons.index',compact('collar','date'));
     }
 
     /**
@@ -26,12 +31,13 @@ class CouponController extends Controller
      */
     public function create()
     {
-       return view('admin.coupons.create');
+        $products=Product::where('status',1)->get();
+       return view('admin.coupons.create',compact('products'));
     }
 
 
     public function pincode_status($type,$id){
-        $res=Offer::where('id',$id)->update(['status'=>$type]);
+        $res=Coupon::where('id',$id)->update(['status'=>$type]);
                if($res){
                 $notification = array(
                     'message' => 'Coupon Updated Successfully!',
@@ -52,14 +58,15 @@ class CouponController extends Controller
      */
     public function store(Request $request)
     {
-
+//  
 
         $request->validate([
 
             "code" => "required",
 
-            "price" => "required|numeric",
-           
+"apply_on"=>'required',
+        "price"=>'required',
+            "cart_amount"=>'required|numeric',
             "expiry_date" => "required",
          'image'=>'mimes:png,jpg,jpeg'
         ]);
@@ -72,11 +79,19 @@ class CouponController extends Controller
             $image->move($location, $filename);
             $image = $filename;
         }
+        if($request->products){
+            $products=implode(',',$request->products);
+        }
 
-$off=new Offer();
-$off->price=$request->price;
+
+$off=new Coupon();
+$off->cart_value=$request->cart_amount;
 $off->image=$image;
 $off->code=$request->code;
+$off->type=$request->type;
+$off->value=$request->price;
+$off->product_id=$products??''; 
+$off->coupon_wise=$request->apply_on;
 $off->description=$request->description;
 $off->expiry_date=$request->expiry_date;
 $off->status=1;
@@ -111,8 +126,11 @@ $res=$off->save();
     {
 
 
-        $off=Offer::findorFail($id);
-        return view('admin.coupons.edit',compact('off'));
+        $off=Coupon::findorFail($id);
+      $checkpro=explode(",",$off->product_id);
+   
+        $products=Product::where('status',1)->get();
+        return view('admin.coupons.edit',compact('off','products','checkpro'));
 
 
 
@@ -128,18 +146,21 @@ $res=$off->save();
      */
     public function update(Request $request, $id)
     {
+        
 
         $request->validate([
 
-            "code" => "required",
-
-            "price" => "required|numeric",
-      
+          
+             "code" => 'required|unique:coupons,code,'.$id,
+             "apply_on"=>'required',
+             "price"=>'required',
+            "cart_amount"=>'required|numeric',
             "expiry_date" => "required",
             'image'=>'mimes:png,jpg,jpeg'
 
         ]);
-        $off=Offer::find($id);
+        $off=Coupon::find($id);
+      
         $image = $off->image;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -149,15 +170,22 @@ $res=$off->save();
             $image->move($location, $filename);
             $image = $filename;
         }
+        if($request->products){
+            $products=implode(',',$request->products);
+        }
 
 
-$off->price=$request->price;
-$off->image=$image;
-$off->code=$request->code;
-$off->description=$request->description;
-$off->expiry_date=$request->expiry_date;
-$off->status=1;
-$res=$off->save();
+        $off->cart_value=$request->cart_amount;
+        $off->image=$image;
+        $off->code=$request->code;
+        $off->type=$request->type;
+        $off->value=$request->price;
+        $off->product_id=$products??''; 
+        $off->coupon_wise=$request->apply_on;
+        $off->description=$request->description;
+        $off->expiry_date=$request->expiry_date;
+        $off->status=1;
+        $res=$off->save();
       if($res){
         $notification = array(
             'message' => 'Coupon Updated Successfully!',
@@ -178,7 +206,7 @@ $res=$off->save();
     public function destroy($id)
     {
 
-     $coupon=Offer::find($id);
+     $coupon=Coupon::find($id);
      $res=$coupon->delete();
      if($res){
         $notification = array(

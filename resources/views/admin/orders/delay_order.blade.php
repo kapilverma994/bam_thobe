@@ -8,10 +8,10 @@
 <div class="data-table-area mg-b-15">
   <div class="container-fluid sparkline13-list">
     <div class="page-header">
-      <h2 class="main-content-title">Order List</h2>
+      <h2 class="main-content-title">Delay Order List</h2>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item active" aria-current="page"> Order List</li>
+        <li class="breadcrumb-item active" aria-current="page">Delay Order List</li>
       </ol>
 
     </div>
