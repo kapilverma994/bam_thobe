@@ -54,7 +54,9 @@
                 
                 <!-- <td>{{ date('Y-m-d', strtotime($row->created_at)) }}</td> -->
                 
-                <td class="datatable-ct"><?php
+                <td class="datatable-ct">
+             <a href="{{url('view-measurement',$row->id)}}" class="btn btn-warning">View Measurement</a>     
+                  <?php
 
 	if($row->status==1)
 

@@ -13,6 +13,7 @@ use App\Models\Sub_admin;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Permission;
+use Carbon\Carbon;
 use Session;
 use Validator;
 use DB;
@@ -30,6 +31,9 @@ class AdminController extends Controller
     }
 
 public function index() {
+    $date= Carbon::now()->format('Y-m-d');
+       
+    $delay_order=  Order::with('users','customer_address')->where('estimate_delivery','<',$date)->groupBy('order_number')->get();
     $totalorder=Order::groupBy('order_number')->get();
     $pendingorder=Order::where('status','0')->groupBy('order_number')->get();
     $pendingorder=count($pendingorder);
@@ -47,9 +51,9 @@ $sale[]=Order::where(['status'=>1,'delivery_status'=>4])->groupBy('order_number'
 $totalsale=array_sum($sale[0]);
 
     $cancel_order=Order::where('status','2')->groupBy('order_number')->get();
-    $cancel_order=count($cancel_order);
+    $cancel_order=count($cancel_order); 
     $total_user=User::where('type','user')->count();
-    return view('admin/dashboard',compact('totalorder','totalsale','pendingorder','shipped_order','packed_order','deliverd_order','total_user','confirm_order','cancel_order'));
+    return view('admin/dashboard',compact('totalorder','totalsale','delay_order','pendingorder','shipped_order','packed_order','deliverd_order','total_user','confirm_order','cancel_order'));
 }
     /**
      * Show the application dashboard.
@@ -1048,7 +1052,7 @@ if ($validator->fails()) {
        
             $row->lastdate=$lastdate->created_at??'';
         }
-    //  dd($user);
+    //   dd($user);
         
         return view('admin.customer_list',compact('user'));
     }

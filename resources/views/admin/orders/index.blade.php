@@ -71,7 +71,7 @@ Cod
     {{$row->grand_total}}
 </td>
 
-<td>100</td>
+<td>50.00</td>
 <td>
     {{$row->created_at}}
 </td>

@@ -366,6 +366,8 @@ $validator = Validator::make($request->all(), [
     {
          $headers = apache_request_headers();
          $token=$headers['Authorization'];
+         $totalprice=0;
+         $total_qty=0;
 
          $validator = Validator::make($request->all(), [
             'fabric' => ['required'],
@@ -380,6 +382,7 @@ $validator = Validator::make($request->all(), [
         }
 
          $user = User::select('*')->where(['token'=>$token])->first();
+ 
         if(!empty($user))
         {
           $image = '';
@@ -391,6 +394,24 @@ $validator = Validator::make($request->all(), [
               $image->move($location, $filename);
               $image = $filename;
           }
+
+
+          $fabric = Thobe_fabric_management::select('*')->where(['id'=>$request->fabric])->orderBy('id','DESC')->first();
+    
+          $collar = Collar_managment::select('*')->where(['id'=>$request->collar])->orderBy('id','DESC')->first();
+      
+          $cuffs = Cuff::select('*')->where(['id'=>$request->cuffs])->orderBy('id','DESC')->first();
+        
+          $pocket = Pocket::select('*')->where(['id'=>$request->pocket])->orderBy('id','DESC')->first();
+        
+          $placket = Front_style::select('*')->where(['id'=>$request->placket])->orderBy('id','DESC')->first();
+         
+          $button = Thobe_Button_management::select('*')->where(['id'=>$request->button])->orderBy('id','DESC')->first();
+         
+          
+          $totalprice=$fabric['price']+$collar['price']+$cuffs['price']+$pocket['price']+$placket['price']+$button['price'];
+     
+        // $totalprice=$totalprice*$request->quantity;
 
           $bookingid = rand(1000,9999);
                     $cart  = new Thobe_cart;
@@ -409,9 +430,11 @@ $validator = Validator::make($request->all(), [
                     $cart->booking_id = $bookingid;
                     $cart->date = $request->date;
                     $cart->branch = $request->branch;
+                    $cart->thobe_total_price= $totalprice;
                     $cart->measurement_type = $request->measurement_type;
                     $cart->home_address = $request->address;
                     $cart->token = $token;
+                
                     $cart->save();
                 $user = Thobe_cart::select('*')->where(['token'=>$token])->orderBy('id', 'DESC')->first();
                 return $this->successResponse($user, ' Thobe add to cart successfully!', $this->success());

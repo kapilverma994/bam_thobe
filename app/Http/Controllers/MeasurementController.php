@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Measurment;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MeasurementController extends Controller
@@ -32,14 +33,28 @@ class MeasurementController extends Controller
 
        }
 
+       public function view_measurement($id){
+           $name=User::where('id',$id)->value('name');
+         
+           $data=Measurment::where('user_id',$id)->get();
+
+           return view('admin.measurement.view_measurement',compact('data','name','id'));
+
+       }
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+
      return view('admin.measurement.create');
+    }
+
+    public function addmeasurement($id=null){
+        return view('admin.measurement.create',compact('id'));
     }
 
     /**
@@ -51,14 +66,14 @@ class MeasurementController extends Controller
     public function store(Request $request)
     {
      $request->validate([
-         'name'=>'required',
+        
          'length'=>'required',
          'chest'=>'required',
          'shoulder'=>'required',
          'sleeve'=>'required',
      ]);
      $data=new Measurment();
-    $data->name=$request->name;
+    $data->user_id=$request->user_id;
     $data->length=$request->length;
     $data->chest=$request->chest;
     $data->shoulder=$request->shoulder;
@@ -68,10 +83,10 @@ class MeasurementController extends Controller
 
      if($res){
         $notification = array(
-            'message' => 'Shop Created Successfully!',
+            'message' => 'Measurement Created Successfully!',
             'alert-type' => 'success'
         );
-         return redirect()->route('measurement.index')->with($notification);
+         return redirect()->route('view_measurement',$request->user_id)->with($notification);
      }
     }
 
@@ -108,14 +123,15 @@ class MeasurementController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name'=>'required',
+          
             'length'=>'required',
             'chest'=>'required',
             'shoulder'=>'required',
             'sleeve'=>'required',
         ]);
         $data=Measurment::findorfail($id);
-        $data->name=$request->name;
+        $user_id=$data->user_id;
+        // $data->user_id=$request->user_id;
         $data->length=$request->length;
         $data->chest=$request->chest;
         $data->shoulder=$request->shoulder;
@@ -123,10 +139,10 @@ class MeasurementController extends Controller
        $res= $data->save();
         if($res){
             $notification = array(
-                'message' => 'Shop Updated Successfully!',
+                'message' => 'Measurement Updated Successfully!',
                 'alert-type' => 'success'
             );
-             return redirect()->route('measurement.index')->with($notification);
+             return redirect()->route('view_measurement',$user_id)->with($notification);
 
     }
 }

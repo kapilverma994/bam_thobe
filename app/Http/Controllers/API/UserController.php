@@ -468,11 +468,15 @@ class UserController extends Controller
          $quantity=$request->quantity; 
 
          $user = User::select('*')->where(['token'=>$token])->first();
+      
+        $tp= Thobe_cart::where(['token'=>$token,'id'=>$id])->first();
         if(!empty($user))
         {
             $update = Thobe_cart::where(['token'=>$token,'id'=>$id])->update(
                     [
                       'quantity' =>$quantity,
+                      'thobe_total_price'=>$quantity*$tp->thobe_total_price
+                      
                     ]);
                     if($update){
                       return $this->successResponse($update, ' Quantity update successfully!', $this->success());

@@ -11,6 +11,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\BranchController;
+use App\Models\Measurment;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -268,8 +270,12 @@ Route::get('/send-notification', [HomeController::class, 'index'])->name('home')
 // Route::post('/save-token', [HomeController::class, 'saveToken'])->name('save-token');
 Route::post('/send-notification', [HomeController::class, 'sendNotification'])->name('send.notification');
 //////////////Measurement/////////////
+Route::get('view-measurement/{id}',[MeasurementController::class,'view_measurement'])->name('view_measurement');
+Route::get('add-measurement/{id}',[MeasurementController::class,'addmeasurement']);
 Route::get('measurement/status/{type}/{id}',[MeasurementController::class,'measurement_status']);
 Route::resource('measurement', MeasurementController::class);
 Route::resource('branch', BranchController::class);
+
+
 
 });

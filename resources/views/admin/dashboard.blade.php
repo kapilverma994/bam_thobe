@@ -51,7 +51,7 @@
               <div class="col-md-3 col-6">
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>{{$pendingorder}}</h3>
+                        <h3>{{$delay_order->count()}}</h3>
                         <p>Delay Orders</p>
                     </div>
                     <div class="icon">
