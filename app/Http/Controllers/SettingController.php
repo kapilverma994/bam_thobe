@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class SettingController extends Controller
 {
@@ -13,7 +14,9 @@ class SettingController extends Controller
 
 
     public function manage_faq(){
+ 
         $data=Setting::find(1);
+   
 
         return view('admin.faq',compact('data'));
     }

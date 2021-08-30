@@ -31,6 +31,7 @@ use Session;
 use Validator;
 use DB;
 use Hash;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class ProductController extends Controller
 {
@@ -52,6 +53,9 @@ class ProductController extends Controller
             ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
             ->orderBy('products.id', 'DESC')
             ->get(['products.*', 'categories.category_name', 'sub_categories.sub_category']);
+
+
+
 
         return view('admin.product.product_list', compact('product'));
     }
